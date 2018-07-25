@@ -1,0 +1,59 @@
+/******************* Used for set-up network connection ************************************/
+
+download tool ====> forticlientsslvpn(sslvpn) from mail/drive.
+unzip
+forticlientsslvpn/32bit/	(or 64bit, or what ever suitable )
+./forticlientsslvpn
+
+click on setting.
+click + button ==> add
+connection name ->"Any name".
+User Name - naveeng
+server->"182.74.207.250".
+password->"July@2018"
+
+click on create.
+Done.
+
+click on default and select newly created connection
+
+example:-
+VPN:
+User Name - naveeng
+Password - July@2018
+Gateway - 182.74.207.250
+Port - 443
+
+/********************** login to server ***********************************/
+cmd 
+enter command
+ssh naveeng@172.16.2.30
+password:- Eximius!23$5
+
+bash ------------>enter
+
+create new folder of any name and follow below link.
+
+https://github.com/android-rpi/local_manifests
+
+/*********************Repo install**************************************/
+git config --global user.name "lycans7"
+git config --global user.email "sh.parth.07@gmail.com"
+
+
+repo init -u https://android.googlesource.com/platform/manifest
+
+repo init -u https://android.googlesource.com/platform/manifest -b android-8.1.0_r41
+
+repo sync
+
+/********************** Android oreo( 8.1)*******************************/
+first install open jdk 8
+
+after 2 percent enter if error come.
+"applypatch <= bootable/recovery/edify/parser.yy"
+
+sudo apt-get install git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev ccache libgl1-mesa-dev libxml2-utils xsltproc unzip
+
+
+

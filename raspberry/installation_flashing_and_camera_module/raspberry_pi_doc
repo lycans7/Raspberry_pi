@@ -1,0 +1,22 @@
+https://thepihut.com/blogs/raspberry-pi-tutorials/16021420-how-to-install-use-the-raspberry-pi-camera
+
+https://www.computerhope.com/issues/ch001720.htm
+
+https://www.makeuseof.com/tag/raspberry-pi-camera-module/
+
+https://www.tutorialspoint.com/python/python_while_loop.htm
+
+https://projects.raspberrypi.org/en/projects/getting-started-with-picamera/
+
+HOW TO TAKE A PHOTO WITH YOUR RASPBERRY PI CAMERA MODULE
+ 
+
+1. "raspistill" is a command line application that allows you to capture images with your camera module. 
+Below is an example of this command in use.
+2. To capture an image in jpeg format, type "raspistill -o image.jpg" at the prompt, where "image" is the name of your image
+
+HOW TO RECORD A VIDEO WITH YOUR RASPBERRY PI CAMERA MODULE 
+1. "raspivid" is a command line application that allows you to capture video with your camera module. 
+Below is an example of this command in use.
+2. To capture a 10 second video with your Raspberry Pi camera module, run "raspivid -o video.h264 -t 10000" at the prompt, 
+where "video" is the name of your video and "10000" is the number of milliseconds

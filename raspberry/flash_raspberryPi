@@ -1,0 +1,25 @@
+/******************Download Os for raspberry pi 3************************************/
+
+open this link
+https://www.raspberrypi.org/
+click on download.
+
+select OS.
+
+for example "Raspbian"
+
+download zip.
+
+/***************** Flash image on sd card*****************************/
+
+Download Etcher.
+
+https://etcher.io/
+
+select image zip -----------> sd card -------------------> flash.
+
+/****************************insert sd card to raspeberry card and power it****************************************/
+
+
+
+
