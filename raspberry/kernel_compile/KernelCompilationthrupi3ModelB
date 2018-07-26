@@ -1,0 +1,62 @@
+kernel compilation and updating the version thru raspbeerry pi
+####go to this site for further things
+https://www.raspberrypi.org/documentation/linux/kernel/building.md
+
+There are two main methods for building the kernel. 
+a .You can build locally on a Raspberry Pi, which will take a long time; 
+b .You can cross-compile, which is much quicker, but requires more setup.
+
+Local building :
+
+First install Git and the build dependencies: 
+1.  sudo apt-get install git bc
+
+Next get the sources, which will take some time:
+ 2. git clone --depth=1 https://github.com/raspberrypi/linux
+
+3.  cd linux
+in makefile change these things so that in configuration files it can change when u are updated ur kernel.
+VERSION = 4
+PATCHLEVEL = 28
+SUBLEVEL = 10
+ 
+4.  KERNEL=kernel7
+
+# Configure the kernel; as well as the default configuration, 
+you may wish to configure your kernel in more detail or apply patches from another source, to add or remove required functionality:
+
+# Configuration is most commonly done through the make menuconfig interface. 
+Alternatively, you can modify your .config file manually, but this can be more difficult for new users.
+
+The menuconfig tool requires the ncurses development headers to compile properly. These can be installed with the following command:
+5.  sudo apt-get install libncurses5-dev
+6.  make menuconfig
+The menuconfig utility has simple keyboard navigation. After a brief compilation, you'll be presented with a list of submenus containing all the options you can configure; there's a lot, so take your time to read through them and get acquainted.
+
+#Use the arrow keys to navigate, 
+the Enter key to enter a submenu (indicated by  --->), Escape twice to go up a level or exit, 
+and the space bar to cycle the state of an option.
+Some options have multiple choices, in which case they'll appear as a submenu and the Enter key will select an option.
+You can press h on most entries to get help about that specific option or menu.
+
+#Exiting, saving, and loading configurations
+Once you're done making the changes you want, press Escape until you're prompted to save your new configuration. 
+By default, this will save to the  .config file. You can save and load configurations by copying this file around.
+
+7.  make bcm2709_defconfig
+Build and install the kernel, modules, and Device Tree blobs; this step takes a long time:
+
+8.  make -j4 zImage modules dtbs
+9.  sudo make modules_install
+10. sudo cp arch/arm/boot/dts/*.dtb /boot/
+11. sudo cp arch/arm/boot/dts/overlays/*.dtb* /boot/overlays/
+12. sudo cp arch/arm/boot/dts/overlays/README /boot/overlays/
+13. sudo cp arch/arm/boot/zImage /boot/$KERNEL.img
+
+14. reboot
+
+
+
+
+
+cross-compile :

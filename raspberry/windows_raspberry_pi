@@ -1,0 +1,20 @@
+How to Install Raspbian from Ubuntu for Raspberry Pi
+
+sudo apt-get install p7zip-full
+
+cd /tmp
+
+wget http://go.microsoft.com/fwlink/?LinkId=691711 -O iot_core_rpi.iso
+
+7z x iot_core_rpi.iso 
+
+7z x Windows_10_IoT_Core_RPi2.msi 
+
+wget http://raw.githubusercontent.com/t0x0/random/master/ffu2img.py
+
+python ffu2img.py File_WindowsIoTRpi2Flash.ffu win10_iot_core_rpi2.img
+
+sudo dd if=win10_iot_core_rpi2.img of=/dev/sdb bs=1M
+
+
+
