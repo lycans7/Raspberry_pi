@@ -8,6 +8,7 @@
 #include <bluetooth/rfcomm.h>
 
 #define my_device "88:79:7E:2B:C1:25"
+//#define my_device "50:8F:4C:AD:6A:5C"
 #define Raspberry_pi "B8:27:EB:07:AE:EC"
 
 char* Scan_device(int dev_id,int sock)
@@ -21,8 +22,7 @@ char* Scan_device(int dev_id,int sock)
 
     max_rsp = 255;
 
-
-    ii = (inquiry_info*)malloc(max_rsp * sizeof(inquiry_info));
+   ii = (inquiry_info*)malloc(max_rsp * sizeof(inquiry_info));
 while(1){
     num_rsp = hci_inquiry(dev_id, len, max_rsp, NULL, &ii, flags);//performs a Bluetooth device discovery and returns a list of detected devices and some basic information about them in the variable ii.
     if( num_rsp < 0 ) perror("hci_inquiry");
@@ -70,7 +70,7 @@ int bluez_pair_device(char* addr, char *controller_baddr)
     strcpy(btaddr_str, addr);
 
     /* pairing might already exists so check first */
-    /* /var/lib/bluetooth/78:A5:04:23:4A:51/00:04:3E:9F:C1:3F/info */
+    /* /var/lib/bluetooth/B8:27:EB:07:AE:EC/88:79:7E:2B:C1:25/info */
     sprintf(keycmd, "sudo cat /var/lib/bluetooth/%s/%s/info | grep Key=", controller_baddr, btaddr_str);
     fp = popen(keycmd, "r");
     if (fp) {
@@ -93,6 +93,7 @@ int bluez_pair_device(char* addr, char *controller_baddr)
         btaddr_str);
 
     sprintf(hciinfo, "hcitool info %s", response);
+	printf("\n parth parth--%s-- \n",hciinfo);
 retry_pair:
     if (retry_count > 5)
         return -1;
@@ -125,8 +126,9 @@ exit_pair:
 }
 
 void bluetooth_receive(){
+
     struct sockaddr_rc loc_addr = { 0 }, rem_addr = { 0 };
-    char buf[1024] = { 0 };
+    char buf[30] = { 0 };
     int s,client, bytes_read;
     socklen_t opt = sizeof(rem_addr);
     s = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
@@ -136,7 +138,7 @@ void bluetooth_receive(){
     loc_addr.rc_bdaddr = *BDADDR_ANY;
     loc_addr.rc_channel = (uint8_t) 1;
     bind(s, (struct sockaddr *)&loc_addr, sizeof(loc_addr));
-while(buf != '8'){
+
     // put socket into listening mode
     listen(s, 1);
 
@@ -145,6 +147,7 @@ while(buf != '8'){
 
     ba2str( &rem_addr.rc_bdaddr, buf );
     fprintf(stderr, "accepted connection from %s\n", buf);
+while(buf[0] != '0'){
     memset(buf, 0, sizeof(buf));
 
     // read data from the client
@@ -155,12 +158,13 @@ while(buf != '8'){
 }
     // close connection
     close(client);
+    close(s);
 }
 
 void bluetooth_send(){
+	printf("\n Line == %d \n",__LINE__);
     struct sockaddr_rc loc_addr = { 0 }, rem_addr = { 0 };
-    char buf[1024] = { 0 };
-	int abc;
+    char buf[30] = { 0 };
     int s,client, bytes_read;
     socklen_t opt = sizeof(rem_addr);
     s = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
@@ -170,7 +174,7 @@ void bluetooth_send(){
     loc_addr.rc_bdaddr = *BDADDR_ANY;
     loc_addr.rc_channel = (uint8_t) 1;
     bind(s, (struct sockaddr *)&loc_addr, sizeof(loc_addr));
-while(abc != '8'){
+
     // put socket into listening mode
     listen(s, 1);
 
@@ -179,39 +183,64 @@ while(abc != '8'){
 
     ba2str( &rem_addr.rc_bdaddr, buf );
     fprintf(stderr, "accepted connection from %s\n", buf);
+while(buf[0] != '0' || client == 0){
     memset(buf, 0, sizeof(buf));
-
-scanf("%d",&abc);
-    // read data from the client
-    bytes_read = write(s,abc,sizeof(abc));
+	printf("\n Enter value \n");
+    // write data from the client
+    gets(buf);
+    write(client,buf,sizeof(buf));
 }
+printf("\n --- 3 %d --\n",__FUNCTION__);
     // close connection
-    close(client);
+   close(client);
+   close(s);
+}
+
+int bluetooth_remove(){
+	int i = 0;
+	char buff[] = "bluetoothctl hciinfo cc remove 88:79:7E:2B:C1:25";
+	i = system("bluetoothctl\cremove\c88:79:7E:2B:C1:25");
+	printf("\n %d---------- \n",i);	
+	return i;
 }
 
 int main(){
 	int dev_id,sock,status;
 	char* ip_address;
-	    dev_id = hci_get_route(NULL); // retrieve the resource number of the first available Bluetooth adapter.
-	    sock = hci_open_dev( dev_id );// convenience function that opens a Bluetooth socket with the specified resource number.
-	    if (dev_id < 0 || sock < 0) {
+	int pairing_status = 0;
+start_pair:
+	 dev_id = hci_get_route(NULL); // retrieve the resource number of the first available Bluetooth adapter.
+	 sock = hci_open_dev( dev_id );// convenience function that opens a Bluetooth socket with the specified resource number.
+	 if (dev_id < 0 || sock < 0) {
         	perror("opening socket");
 	        exit(1);
-	    }
+	 }
 	
 	ip_address = Scan_device(dev_id,sock);
 	printf(" \n %s \n",ip_address);
 	bluez_pair_device(ip_address,Raspberry_pi);
-	int val;
+	int val = -1;
 while(val != 0){
-	printf("\n Select 1: Send \n Select 2: Receive \n Select 0: Exit \n");
-	scanf("%d",&val);
+
+	printf("\n\n Select 1: Send \n Select 2: Receive \n Select 3: Removed paired device \n Select 0: Exit \n");
+	scanf("%d",&val);  
 	switch(val){
 	case 1:
+		printf("\n Line == %d \n",__LINE__);
 		bluetooth_send();
+		printf("\n Line == %d \n",__LINE__);
+		break;
 	case 2:
 		bluetooth_receive();	
-	case 0:
+		break;
+	case 3:
+		pairing_status = bluetooth_remove();	
+		if(pairing_status == 1){
+		   printf("\n %d Line == %d \n",pairing_status,__LINE__);
+		   goto start_pair;
+		}
+		break;
+	default:
 		break;
 	}
 }
