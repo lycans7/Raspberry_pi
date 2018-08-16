@@ -7,8 +7,8 @@
 #include <bluetooth/hci_lib.h>
 #include <bluetooth/rfcomm.h>
 
-#define my_device "88:79:7E:2B:C1:25"
-//#define my_device "50:8F:4C:AD:6A:5C"
+//#define my_device "88:79:7E:2B:C1:25"
+#define my_device "50:8F:4C:AD:6A:5C"
 #define Raspberry_pi "B8:27:EB:07:AE:EC"
 
 char* Scan_device(int dev_id,int sock)
@@ -93,7 +93,7 @@ int bluez_pair_device(char* addr, char *controller_baddr)
         btaddr_str);
 
     sprintf(hciinfo, "hcitool info %s", response);
-	printf("\n parth parth--%s-- \n",hciinfo);
+	
 retry_pair:
     if (retry_count > 5)
         return -1;
@@ -183,31 +183,27 @@ void bluetooth_send(){
 
     ba2str( &rem_addr.rc_bdaddr, buf );
     fprintf(stderr, "accepted connection from %s\n", buf);
-while(buf[0] != '0' || client == 0){
+    while(buf[0] != '0' || client == 0){
     memset(buf, 0, sizeof(buf));
 	printf("\n Enter value \n");
     // write data from the client
     gets(buf);
     write(client,buf,sizeof(buf));
-}
-printf("\n --- 3 %d --\n",__FUNCTION__);
+    }
+
     // close connection
    close(client);
    close(s);
 }
 
-int bluetooth_remove(){
-	int i = 0;
-	char buff[] = "bluetoothctl hciinfo cc remove 88:79:7E:2B:C1:25";
-	i = system("bluetoothctl\cremove\c88:79:7E:2B:C1:25");
-	printf("\n %d---------- \n",i);	
-	return i;
+void bluetooth_remove(){
+	system("./command.sh");
+	printf("\n ------Unpaired bluetooth device ----------------- \n");	
 }
 
 int main(){
 	int dev_id,sock,status;
 	char* ip_address;
-	int pairing_status = 0;
 start_pair:
 	 dev_id = hci_get_route(NULL); // retrieve the resource number of the first available Bluetooth adapter.
 	 sock = hci_open_dev( dev_id );// convenience function that opens a Bluetooth socket with the specified resource number.
@@ -220,28 +216,32 @@ start_pair:
 	printf(" \n %s \n",ip_address);
 	bluez_pair_device(ip_address,Raspberry_pi);
 	int val = -1;
+
 while(val != 0){
 
-	printf("\n\n Select 1: Send \n Select 2: Receive \n Select 3: Removed paired device \n Select 0: Exit \n");
+	printf("\n\n Select 1: Send \n Select 2: Receive \n Select 3: Removed paired device \n Select 4: re-pair device \n Select 0: Exit \n");
 	scanf("%d",&val);  
 	switch(val){
 	case 1:
-		printf("\n Line == %d \n",__LINE__);
 		bluetooth_send();
-		printf("\n Line == %d \n",__LINE__);
 		break;
 	case 2:
 		bluetooth_receive();	
 		break;
 	case 3:
-		pairing_status = bluetooth_remove();	
-		if(pairing_status == 1){
-		   printf("\n %d Line == %d \n",pairing_status,__LINE__);
-		   goto start_pair;
+		bluetooth_remove();	
+		break;
+	case 4:
+		goto start_pair;
+		break;
+	case 0:
+		val = 0;
+		break;
+	default:{
+		printf("\n Exit \n");
+		val = 0;
+		break;
 		}
-		break;
-	default:
-		break;
 	}
 }
 	close( sock );
